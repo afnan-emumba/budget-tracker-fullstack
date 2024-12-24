@@ -74,6 +74,7 @@ const userSchema = mongoose.Schema(
     isLoggedIn: {
       type: Boolean,
       required: true,
+      default: false,
     },
   },
   {
