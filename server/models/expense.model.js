@@ -5,6 +5,7 @@ const expenseSchema = mongoose.Schema(
     title: {
       type: String,
       required: true,
+      maxlength: 30,
     },
     userID: {
       type: String,
