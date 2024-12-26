@@ -1,0 +1,9 @@
+.error {
+    color: #FF5771;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.modalContent :global(.ant-picker) {
+    background-color: #eff4fb !important;
+}

@@ -1,0 +1,15 @@
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logoMark {
+    height: 36px;
+    width: auto;
+}
+
+.logoType {
+    height: 28px;
+    width: auto;
+}

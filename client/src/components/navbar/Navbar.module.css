@@ -1,0 +1,101 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 90px;
+    padding: 0 28px;
+    border-bottom: 1px solid #EEEEEE;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navbarContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.userAvatar {
+    .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: block;
+        object-fit: cover;
+    }
+}
+
+.sidebarToggleButton {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: 50px;
+    width: 50px;
+    margin-left: 0rem;
+}
+
+.sidebarToggleButton:hover {
+    cursor: pointer;
+}
+
+.notificationIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.notificationDot {
+    position: absolute;
+    top: -3px;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #FF5C00;
+    border-radius: 50%;
+}
+
+.notificationIcon:hover {
+    cursor: pointer;
+}
+
+.notificationContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    scrollbar-width: thin;
+    scrollbar-color: #ebf1f3 #FFFFFF;
+}
+
+.stickyClearButton {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 10;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.stickyClearButton:hover {
+    background-color: #ebf1f3 !important;
+}
+
+.notificationContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+.notificationContent::-webkit-scrollbar-track {
+    background: #FFFFFF;
+}
+
+.notificationContent::-webkit-scrollbar-thumb {
+    background-color: #ebf1f3;
+    border-radius: 10px;
+    border: 2px solid #FFFFFF;
+}

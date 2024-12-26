@@ -1,0 +1,58 @@
+.analysisContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analysisGraph {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.tableSelect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E1E8F2;
+    border: 1px solid #DDE4F0;
+    border-radius: 4px;
+}
+
+.tableSelect label {
+    margin: 0;
+    padding: 0 10px;
+    color: #667085;
+}
+
+.graphFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px;
+}
+
+/* Ant Overrides */
+
+.analysisGraph :global(.ant-table-cell) {
+    border: none !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.analysisGraph :global(.ant-select-selector) {
+    border: none !important;
+    border-radius: 0 4px 4px 0 !important;
+}

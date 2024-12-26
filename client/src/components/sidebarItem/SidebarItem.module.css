@@ -1,0 +1,49 @@
+.sidebarItemContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 10px;
+    border-radius: 0.5rem;
+}
+
+.sidebarItemContainer.collapse {
+    justify-content: center;
+}
+
+.sidebarItemContainer.selected {
+    background-color: #7539FF;
+}
+
+.sidebarItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    height: 1.5rem;
+}
+
+.sidebarItem:hover {
+    cursor: pointer;
+}
+
+.sidebarIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebarIcon.selected {
+    color: white;
+}
+
+.sidebarText {
+    margin: 0;
+}
+
+.sidebarText.collapse {
+    display: none;
+}
+
+.sidebarText.selected {
+    color: white;
+}

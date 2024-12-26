@@ -1,0 +1,117 @@
+.homeContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableFilters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.tableSelect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E1E8F2;
+    border: 1px solid #DDE4F0;
+    border-radius: 4px;
+}
+
+.tableSelect label {
+    margin: 0;
+    padding: 0 10px;
+    color: #667085;
+}
+
+.tableInput {
+    background-color: white;
+}
+
+.tableInput:hover {
+    background-color: #fefefe;
+}
+
+.expenseTable {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.ant-pagination {
+    display: inline-block;
+}
+
+.tableFooter p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.tableFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px;
+}
+
+.alert {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 2rem;
+    margin-top: 5rem;
+    width: 400px;
+    overflow: hidden;
+    animation: slideIn 0.2s ease-out;
+    border-radius: 10px;
+    gap: 1rem;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Ant Overrides */
+
+.homeContent :global(.ant-pagination-item) {
+    border: 1px solid #DDE4F0 !important;
+}
+
+.homeContent :global(.ant-picker) {
+    border: none !important;
+    border-radius: 0 4px 4px 0 !important;
+}
+
+.homeContent :global(.ant-select-selector) {
+    border: none !important;
+    border-radius: 0 4px 4px 0 !important;
+}
+
+.homeContent :global(.ant-select-selection-item) {
+    color: #BCC0C9 !important;
+}
+
+.homeContent :global(.ant-alert-message) {
+    font-weight: 600 !important;
+}
