@@ -10,7 +10,6 @@ The Budget Tracker App is a full-stack application built using the MERN stack (M
 - Add, Edit, and Delete Expenses
 - View Expense Analysis
 - Profile Management
-- Responsive Design
 
 ## Technologies Used
 
@@ -49,14 +48,14 @@ The Budget Tracker App is a full-stack application built using the MERN stack (M
 1. Start the backend server:
    ```bash
    cd server
-   npm start
+   npm run dev
    ```
 2. Start the frontend development server:
    ```bash
    cd client
-   npm start
+   npm run dev
    ```
-3. Open your browser and navigate to `http://localhost:3000`.
+3. Open your browser and navigate to the frontend server URL.
 
 ## Folder Structure
 
