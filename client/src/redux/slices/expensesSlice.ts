@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import { Expense, ExpensesState } from "../../utils/interfaces";
 import { testExpenses } from "../testData/testExpenses";
 
@@ -34,16 +32,6 @@ const expensesSlice = createSlice({
   },
 });
 
-const persistConfig = {
-  key: "expenses",
-  storage,
-};
-
-const persistedExpensesReducer = persistReducer(
-  persistConfig,
-  expensesSlice.reducer
-);
-
 export const { addExpense, updateExpense, deleteExpense } =
   expensesSlice.actions;
-export default persistedExpensesReducer;
+export default expensesSlice.reducer;

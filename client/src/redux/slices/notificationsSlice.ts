@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 
 interface Notification {
   id: number;
@@ -50,16 +48,6 @@ const notificationsSlice = createSlice({
   },
 });
 
-const persistConfig = {
-  key: "notifications",
-  storage,
-};
-
-const persistedNotificationsReducer = persistReducer(
-  persistConfig,
-  notificationsSlice.reducer
-);
-
 export const {
   addNotification,
   deleteNotification,
@@ -67,4 +55,4 @@ export const {
   clearAllNotifications,
   markNotificationsAsRead,
 } = notificationsSlice.actions;
-export default persistedNotificationsReducer;
+export default notificationsSlice.reducer;
