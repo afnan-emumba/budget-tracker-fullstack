@@ -1,18 +1,16 @@
 import { Card } from "antd";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { User } from "../../utils/interfaces";
 import styles from "./ProfileDetails.module.css";
 
-const ProfileDetails = () => {
-  const users = useSelector((state: RootState) => state.user.users);
-  const loggedInUser = users.find((user) => user.isLoggedIn);
+interface ProfileProps {
+  userData: User | null;
+}
 
+const ProfileDetails = ({ userData }: ProfileProps) => {
   return (
     <div className={styles.profileSection}>
       <Card className={styles.profileCard} title='About Me'>
-        <p>
-          {loggedInUser?.aboutMe || "No information available about the user."}
-        </p>
+        <p>{userData?.aboutMe || "No information available about the user."}</p>
       </Card>
       <Card className={styles.profileCard} title='Personal Details'>
         <div
@@ -31,48 +29,47 @@ const ProfileDetails = () => {
               gap: "2rem",
             }}
           >
-            {loggedInUser?.firstName && loggedInUser?.lastName && (
+            {userData?.firstName && userData?.lastName && (
               <div>
                 <p>Full Name</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.firstName} {loggedInUser.middleName}{" "}
-                  {loggedInUser.lastName}
+                  {userData.firstName} {userData.middleName} {userData.lastName}
                 </p>
               </div>
             )}
-            {loggedInUser?.gender && (
+            {userData?.gender && (
               <div>
                 <p>Gender</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.gender === "male"
+                  {userData.gender === "male"
                     ? "Male"
-                    : loggedInUser.gender === "female"
+                    : userData.gender === "female"
                     ? "Female"
                     : "Rather not say"}
                 </p>
               </div>
             )}
-            {loggedInUser?.email && (
+            {userData?.email && (
               <div>
                 <p>Email</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.email}
+                  {userData.email}
                 </p>
               </div>
             )}
-            {loggedInUser?.education && (
+            {userData?.education && (
               <div>
                 <p>Education</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.education}
+                  {userData.education}
                 </p>
               </div>
             )}
-            {loggedInUser?.streetAddress && (
+            {userData?.streetAddress && (
               <div>
                 <p>Address</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.streetAddress}
+                  {userData.streetAddress}
                 </p>
               </div>
             )}
@@ -84,35 +81,35 @@ const ProfileDetails = () => {
               gap: "2rem",
             }}
           >
-            {loggedInUser?.phoneNumber && (
+            {userData?.phoneNumber && (
               <div>
                 <p>Phone</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.phoneNumber}
+                  {userData.phoneNumber}
                 </p>
               </div>
             )}
-            {loggedInUser?.zipCode && (
+            {userData?.zipCode && (
               <div>
                 <p>Zip Code</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.zipCode}
+                  {userData.zipCode}
                 </p>
               </div>
             )}
-            {loggedInUser?.dateOfBirth && (
+            {userData?.dateOfBirth && (
               <div>
                 <p>Date of Birth</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.dateOfBirth}
+                  {userData.dateOfBirth}
                 </p>
               </div>
             )}
-            {loggedInUser?.budgetLimit && (
+            {userData?.budgetLimit && (
               <div>
                 <p>Budget Limit</p>
                 <p style={{ color: "#2B2B2B", fontWeight: "600" }}>
-                  {loggedInUser.budgetLimit} PKR
+                  {userData.budgetLimit} PKR
                 </p>
               </div>
             )}

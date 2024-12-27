@@ -36,6 +36,27 @@ export const getExpense = async (req, res) => {
   }
 };
 
+export const getUserExpenses = async (req, res) => {
+  const { userID } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userID)) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  try {
+    const expenses = await Expense.find({ userID });
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const createExpense = async (req, res) => {
   const expense = req.body;
 

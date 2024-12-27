@@ -5,30 +5,37 @@ import { EmailIcon, EyeIcon, EyeOnIcon } from "../../../assets/icons";
 import loginImage from "../../../assets/images/login-illustration.png";
 import styles from "./Login.module.css";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { updateUser } from "../../../redux/slices/usersSlice";
 import { useNavigate } from "react-router";
+import axios from "axios";
+import { useUser } from "../../../context/UserContext";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Login = () => {
+  const { setUserID } = useUser();
+
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const users = useSelector((state: RootState) => state.user.users);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handleLogin = (values: { email: string; password: string }) => {
-    const user = users.find(
-      (user) => user.email === values.email && user.password === values.password
-    );
-    if (user) {
-      dispatch(updateUser({ userId: user.userId, isLoggedIn: true }));
-      navigate("/");
-    } else {
-      alert("Invalid email or password");
+  const handleLogin = async (values: { email: string; password: string }) => {
+    try {
+      const response = await axios.post(`${baseUrl}/auth/login`, values);
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        const userId = response.data._id;
+        console.log(userId);
+        setUserID(userId);
+        navigate("/");
+      } else {
+        alert("Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login. Please try again.");
     }
   };
 

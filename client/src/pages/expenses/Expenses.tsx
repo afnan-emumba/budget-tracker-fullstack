@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Helmet } from "react-helmet";
 import dayjs from "dayjs";
 import toast, { Toaster } from "react-hot-toast";
@@ -20,17 +19,14 @@ import {
 } from "../../assets/icons";
 import styles from "./Expenses.module.css";
 import ModalDialog from "../../components/modal/ModalDialog";
-import { RootState } from "../../redux/store";
-import {
-  addExpense,
-  deleteExpense,
-  updateExpense,
-} from "../../redux/slices/expensesSlice";
-import { Expense } from "../../utils/interfaces";
-import { addNotification } from "../../redux/slices/notificationsSlice";
+import { Expense, User } from "../../utils/interfaces";
 import tableColumns from "./TableColumns";
+import { useUser } from "../../context/UserContext";
+import axios from "axios";
 
 const { Option } = Select;
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Expenses = () => {
   const [pageSize, setPageSize] = useState(5);
@@ -43,15 +39,29 @@ const Expenses = () => {
   const [sortField, setSortField] = useState<keyof Expense | null>(null);
   const [filterDate, setFilterDate] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { userID } = useUser();
+  const [user, setUser] = useState<User>();
 
-  const users = useSelector((state: RootState) => state.user.users);
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
-  const loggedInUser = users.find((user) => user.isLoggedIn);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchUserDataAndExpenses = async () => {
+      try {
+        if (userID) {
+          const userResponse = await axios.get(`${baseUrl}/users/${userID}`);
+          setUser(userResponse.data);
 
-  const userExpenses = expenses.filter(
-    (expense) => expense.userId === loggedInUser?.userId
-  );
+          const expensesResponse = await axios.get(
+            `${baseUrl}/expenses/u/${userID}`
+          );
+          setExpenses(expensesResponse.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchUserDataAndExpenses();
+  }, [userID, user]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -89,21 +99,25 @@ const Expenses = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredExpenses = userExpenses
+  const filteredExpenses = expenses
     .filter(
       (expense) => !filterDate || dayjs(expense.date).isSame(filterDate, "day")
     )
     .filter((expense) =>
-      expense.expense.toLowerCase().includes(searchTerm.toLowerCase())
+      expense.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .reverse();
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {
     if (!sortField || !sortOrder) return 0;
-    const aValue =
-      sortField === "price" ? parseFloat(a[sortField]) : a[sortField];
-    const bValue =
-      sortField === "price" ? parseFloat(b[sortField]) : b[sortField];
+    let aValue: number | string = a[sortField] ?? "";
+    let bValue: number | string = b[sortField] ?? "";
+
+    if (sortField === "price") {
+      aValue = parseFloat(String(a[sortField] ?? "0"));
+      bValue = parseFloat(String(b[sortField] ?? "0"));
+    }
+
     if (aValue < bValue) return sortOrder === "ascend" ? -1 : 1;
     if (aValue > bValue) return sortOrder === "ascend" ? 1 : -1;
     return 0;
@@ -126,14 +140,14 @@ const Expenses = () => {
     setModalType("add");
   };
 
-  const onDelete = (key: number) => {
-    const expense = userExpenses.find((item) => item.key === key);
+  const onDelete = (id: string) => {
+    const expense = expenses.find((item) => item._id === id);
     setSelectedExpense(expense || null);
     setModalType("delete");
   };
 
-  const onEdit = (key: number) => {
-    const expense = userExpenses.find((item) => item.key === key);
+  const onEdit = (id: string) => {
+    const expense = expenses.find((item) => item._id === id);
     setSelectedExpense(expense || null);
     setModalType("edit");
   };
@@ -196,35 +210,41 @@ const Expenses = () => {
   };
 
   const handleExpense = (expense: Expense, type: "add" | "edit") => {
-    if (type === "add" && loggedInUser) {
-      const newExpense = { ...expense, userId: loggedInUser.userId };
-      dispatch(addExpense(newExpense));
-      dispatch(
-        addNotification({
-          id: Date.now(),
-          userId: loggedInUser.userId,
-          type: "add",
-          message: "added successfully",
-          timestamp: Date.now(),
-          icon: "add_icon",
-          expenseTitle: expense.expense,
+    if (type === "add" && userID) {
+      const newExpense = { ...expense, userId: userID };
+      fetch(`${baseUrl}/expenses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newExpense),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setExpenses((prevExpenses) => [...prevExpenses, data]);
+          showToast("add", "Expense Added Successfully!");
         })
-      );
-      showToast("add", "Expense Added Successfully!");
+        .catch((error) => {
+          console.error("Error adding expense:", error);
+        });
     } else if (type === "edit") {
-      dispatch(updateExpense(expense));
-      dispatch(
-        addNotification({
-          id: Date.now(),
-          userId: expense.userId,
-          type: "update",
-          message: "updated successfully",
-          timestamp: Date.now(),
-          icon: "update_icon",
-          expenseTitle: expense.expense,
+      fetch(`${baseUrl}/expenses/${expense._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(expense),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setExpenses((prevExpenses) =>
+            prevExpenses.map((exp) => (exp._id === data.key ? data : exp))
+          );
+          showToast("edit", "Expense Updated Successfully!");
         })
-      );
-      showToast("edit", "Expense Updated Successfully!");
+        .catch((error) => {
+          console.error("Error updating expense:", error);
+        });
     }
     setModalType(null);
   };
@@ -233,35 +253,31 @@ const Expenses = () => {
   const handleEditExpense = (expense: Expense) =>
     handleExpense(expense, "edit");
 
-  const handleDeleteExpense = (key: number) => {
-    const expense = userExpenses.find((item) => item.key === key);
-    if (expense) {
-      dispatch(deleteExpense(key));
-      dispatch(
-        addNotification({
-          id: Date.now(),
-          userId: expense.userId,
-          type: "delete",
-          message: "removed",
-          timestamp: Date.now(),
-          icon: "delete_icon",
-          expenseTitle: expense.expense,
-        })
-      );
-      setModalType(null);
-      showToast("delete", "Expense Deleted Successfully!");
+  const handleDeleteExpense = (id: string) => {
+    fetch(`${baseUrl}/expenses/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense._id !== id)
+        );
+        showToast("delete", "Expense Deleted Successfully!");
 
-      const totalRecordsAfterDeletion = userExpenses.length - 1;
-      const totalPagesAfterDeletion = Math.ceil(
-        totalRecordsAfterDeletion / pageSize
-      );
-      if (currentPage > totalPagesAfterDeletion) {
-        setCurrentPage(totalPagesAfterDeletion);
-      }
-    }
+        const totalRecordsAfterDeletion = expenses.length - 1;
+        const totalPagesAfterDeletion = Math.ceil(
+          totalRecordsAfterDeletion / pageSize
+        );
+        if (currentPage > totalPagesAfterDeletion) {
+          setCurrentPage(totalPagesAfterDeletion);
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting expense:", error);
+      });
+    setModalType(null);
   };
 
-  const tableColumnsConfig = tableColumns(onDelete, onEdit, loggedInUser);
+  const tableColumnsConfig = user ? tableColumns(onDelete, onEdit, user) : [];
 
   useEffect(() => {
     calculatePageSize();
@@ -338,12 +354,12 @@ const Expenses = () => {
           />
           <div className={styles.tableFooter}>
             <p>
-              Showing {paginatedData.length} / {userExpenses.length} items
+              Showing {paginatedData.length} / {expenses.length} items
             </p>
             <Pagination
               current={currentPage}
               pageSize={pageSize}
-              total={userExpenses.length}
+              total={expenses.length}
               onChange={handlePageChange}
             />
           </div>

@@ -1,19 +1,15 @@
-import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { RootState } from "../redux/store";
 
 interface PrivateRouteProps {
   children: JSX.Element;
 }
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const isLoggedIn = useSelector((state: RootState) =>
-    state.user.users.some((user) => user.isLoggedIn)
-  );
+  const token = localStorage.getItem("token");
   const location = useLocation();
 
   if (
-    !isLoggedIn &&
+    !token &&
     location.pathname !== "/login" &&
     location.pathname !== "/signup" &&
     location.pathname !== "/reset-password"
@@ -22,7 +18,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   }
 
   if (
-    isLoggedIn &&
+    token &&
     (location.pathname === "/login" ||
       location.pathname === "/signup" ||
       location.pathname === "/reset-password")

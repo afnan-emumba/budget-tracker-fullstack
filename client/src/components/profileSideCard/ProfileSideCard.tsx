@@ -1,19 +1,19 @@
-import { useSelector } from "react-redux";
 import { Card, Divider } from "antd";
-import { RootState } from "../../redux/store";
 import {
   PhoneIcon,
   MailIcon,
   LocationIcon,
   LinkIcon,
 } from "../../assets/icons";
+import { User } from "../../utils/interfaces";
 import Placeholder from "../../assets/images/placeholder_avatar.jpg";
 import styles from "./ProfileSideCard.module.css";
 
-const ProfileSideCard = () => {
-  const users = useSelector((state: RootState) => state.user.users);
-  const loggedInUser = users.find((user) => user.isLoggedIn);
+interface ProfileProps {
+  userData: User | null;
+}
 
+const ProfileSideCard = ({ userData }: ProfileProps) => {
   return (
     <Card
       className={styles.profileCard}
@@ -38,12 +38,12 @@ const ProfileSideCard = () => {
           }}
         >
           <img
-            src={loggedInUser?.profilePicture || Placeholder}
+            src={userData?.profilePicture || Placeholder}
             alt='avatar'
             className={styles.avatar}
           />
           <h3>
-            {loggedInUser?.firstName} {loggedInUser?.lastName}
+            {userData?.firstName} {userData?.lastName}
           </h3>
         </div>
         <Divider style={{ width: "100%" }} />
@@ -55,7 +55,7 @@ const ProfileSideCard = () => {
             gap: "15px",
           }}
         >
-          {loggedInUser?.phoneNumber && (
+          {userData?.phoneNumber && (
             <div
               style={{
                 display: "flex",
@@ -64,10 +64,10 @@ const ProfileSideCard = () => {
               }}
             >
               <PhoneIcon />
-              <p>{loggedInUser.phoneNumber}</p>
+              <p>{userData.phoneNumber}</p>
             </div>
           )}
-          {loggedInUser?.email && (
+          {userData?.email && (
             <div
               style={{
                 display: "flex",
@@ -76,10 +76,10 @@ const ProfileSideCard = () => {
               }}
             >
               <MailIcon />
-              <p>{loggedInUser.email}</p>
+              <p>{userData.email}</p>
             </div>
           )}
-          {(loggedInUser?.city || loggedInUser?.state) && (
+          {(userData?.city || userData?.state) && (
             <div
               style={{
                 display: "flex",
@@ -89,12 +89,12 @@ const ProfileSideCard = () => {
             >
               <LocationIcon />
               <p>
-                {loggedInUser.city && `${loggedInUser.city}, `}
-                {loggedInUser.state && `${loggedInUser.state}`}
+                {userData.city && `${userData.city}, `}
+                {userData.state && `${userData.state}`}
               </p>
             </div>
           )}
-          {loggedInUser?.website && (
+          {userData?.website && (
             <div
               style={{
                 display: "flex",
@@ -103,7 +103,7 @@ const ProfileSideCard = () => {
               }}
             >
               <LinkIcon />
-              <p>{loggedInUser.website}</p>
+              <p>{userData.website}</p>
             </div>
           )}
         </div>

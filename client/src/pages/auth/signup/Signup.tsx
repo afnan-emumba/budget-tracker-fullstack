@@ -1,24 +1,21 @@
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router";
 import { Form, Input, Button } from "antd";
+import axios from "axios";
 import signupImage from "../../../assets/images/signup-illustration.png";
 import { EmailIcon, EyeIcon, EyeOnIcon } from "../../../assets/icons";
-import styles from "./Signup.module.css";
 import { useState } from "react";
 import { useFormik } from "formik";
 import { validationSchema } from "../../../utils/validation";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../../../redux/slices/usersSlice";
-import { RootState } from "../../../redux/store";
-import { defaultUser } from "./defaultUser";
+import styles from "./Signup.module.css";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Signup = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const users = useSelector((state: RootState) => state.user.users);
   const [emailExists, setEmailExists] = useState(false);
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -35,23 +32,29 @@ const Signup = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      budget: "",
+      budgetLimit: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      const userExists = users.some((user) => user.email === values.email);
-      if (userExists) {
-        setEmailExists(true);
-      } else {
-        dispatch(
-          setUser({
-            userId: Date.now(),
-            ...defaultUser,
-            ...values,
-            budgetLimit: parseFloat(values.budget),
-          })
-        );
-        navigate("/login");
+    onSubmit: async (values) => {
+      const { confirmPassword, ...submitValues } = values;
+
+      Object.keys(submitValues).forEach((key) => {
+        (submitValues as any)[key] = (submitValues as any)[key].toString();
+      });
+
+      try {
+        const response = await axios.post(`${baseUrl}/users`, submitValues);
+        if (response.status === 201) {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.log((error as any).response);
+        if (
+          (error as any).response.data.message.includes("Email already exists")
+        ) {
+          console.log("Email already exists");
+          setEmailExists(true);
+        }
       }
     },
   });
@@ -121,9 +124,11 @@ const Signup = () => {
                 : ""
             }
             help={
-              (formik.errors.email && formik.touched.email
+              formik.errors.email && formik.touched.email
                 ? formik.errors.email
-                : "") || (emailExists ? "User already exists" : "")
+                : emailExists
+                ? "Email already exists"
+                : ""
             }
           >
             <Input
@@ -207,19 +212,21 @@ const Signup = () => {
           <Form.Item
             label='Budget'
             validateStatus={
-              formik.errors.budget && formik.touched.budget ? "error" : ""
+              formik.errors.budgetLimit && formik.touched.budgetLimit
+                ? "error"
+                : ""
             }
             help={
-              formik.errors.budget && formik.touched.budget
-                ? formik.errors.budget
+              formik.errors.budgetLimit && formik.touched.budgetLimit
+                ? formik.errors.budgetLimit
                 : ""
             }
           >
             <Input
-              name='budget'
+              name='budgetLimit'
               type='number'
               placeholder='Enter amount'
-              value={formik.values.budget}
+              value={formik.values.budgetLimit}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />

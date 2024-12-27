@@ -1,23 +1,22 @@
 export interface User {
-  userId: number;
+  _id?: string;
   firstName: string;
-  middleName: string;
+  middleName?: string;
   lastName: string;
-  aboutMe: string;
-  gender: string;
+  aboutMe?: string;
+  gender?: string;
   email: string;
   password: string;
-  website: string;
-  phoneNumber: string;
-  education: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  dateOfBirth: string;
+  website?: string;
+  phoneNumber?: string;
+  education?: string;
+  streetAddress?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  dateOfBirth?: string;
   budgetLimit: number;
-  profilePicture: string;
-  isLoggedIn: boolean;
+  profilePicture?: string;
 }
 
 export interface UsersState {
@@ -25,10 +24,10 @@ export interface UsersState {
 }
 
 export interface Expense {
-  key: number;
-  userId: number;
-  expense: string;
-  price: string;
+  _id?: string;
+  title: string;
+  userID: string;
+  price: number;
   date: string;
 }
 

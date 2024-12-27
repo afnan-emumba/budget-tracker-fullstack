@@ -28,7 +28,7 @@ export const validationSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), undefined], "Passwords must match")
     .required("Confirm password is required"),
-  budget: Yup.number()
+  budgetLimit: Yup.number()
     .min(1, "Budget must be at least 1")
     .max(99999999, "Budget must be at most 99999999")
     .required("Budget is required"),

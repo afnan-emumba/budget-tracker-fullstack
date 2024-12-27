@@ -19,15 +19,16 @@ const userSlice = createSlice({
     ) => {
       if (action.payload.userId === 0) {
         state.users.forEach((user) => {
-          user.isLoggedIn = false;
+          // user.isLoggedIn = false;
         });
       } else {
-        const index = state.users.findIndex(
-          (user) => user.userId === action.payload.userId
-        );
-        if (index !== -1) {
-          state.users[index] = { ...state.users[index], ...action.payload };
-        }
+        // const index = state.users
+        //   .findIndex
+        //   // (user) => user.userId === action.payload.userId
+        //   ();
+        // if (index !== -1) {
+        //   state.users[index] = { ...state.users[index], ...action.payload };
+        // }
       }
     },
   },

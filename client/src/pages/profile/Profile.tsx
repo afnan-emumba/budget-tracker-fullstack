@@ -6,14 +6,39 @@ import ProfileSideCard from "../../components/profileSideCard/ProfileSideCard";
 import ProfileDetails from "../../components/profileDetails/ProfileDetails";
 import EditProfile from "../../components/editProfile/EditProfile";
 import styles from "./Profile.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useUser } from "../../context/UserContext";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Profile = () => {
+  const { userID } = useUser();
+
+  const userId = userID;
+  console.log("USER", userId);
   const [activeTab, setActiveTab] = useState("profile");
   const [alertVisible, setAlertVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`${baseUrl}/users/${userId}`)
+        .then((response) => {
+          setUserData(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    } else {
+      console.error("User ID not found");
+    }
+  }, [userId]);
 
   const handleSwitchTab = () => {
     setActiveTab("profile");
+    window.location.reload();
   };
 
   const onClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -70,12 +95,13 @@ const Profile = () => {
         </div>
         <Divider />
         <div className={styles.profileCardsContainer}>
-          <ProfileSideCard />
-          {activeTab === "profile" && <ProfileDetails />}
+          <ProfileSideCard userData={userData} />
+          {activeTab === "profile" && <ProfileDetails userData={userData} />}
           {activeTab === "account" && (
             <EditProfile
               onSwitchTab={handleSwitchTab}
               showAlert={() => setAlertVisible(true)}
+              userData={userData}
             />
           )}
         </div>

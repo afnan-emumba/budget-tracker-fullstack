@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Logo from "../logo/Logo";
 import SidebarItem from "../sidebarItem/SidebarItem";
 import { AnalysisIcon, ExpensesIcon, LogoutIcon } from "../../assets/icons";
-import { updateUser } from "../../redux/slices/usersSlice";
+import { useUser } from "../../context/UserContext";
 import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
@@ -13,12 +12,18 @@ interface SidebarProps {
 
 const Sidebar = ({ isVisible }: SidebarProps) => {
   const [selectedItem, setSelectedItem] = useState("Expenses");
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { setUserID } = useUser();
 
-  const handleLogout = () => {
-    dispatch(updateUser({ userId: 0, isLoggedIn: false }));
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("token");
+      setUserID(null);
+      window.location.reload();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (

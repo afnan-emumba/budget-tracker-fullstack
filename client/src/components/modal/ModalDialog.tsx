@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Input, DatePicker } from "antd";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 import { Expense } from "../../utils/interfaces";
 import styles from "./ModalDialog.module.css";
 import dayjs from "dayjs";
+import axios from "axios";
 
 interface ModalDialogProps {
   modalType: "add" | "edit" | "delete" | null;
@@ -13,8 +12,10 @@ interface ModalDialogProps {
   expense: Expense | null;
   onAddExpense: (expense: Expense) => void;
   onEditExpense: (expense: Expense) => void;
-  onDeleteExpense: (key: number) => void;
+  onDeleteExpense: (id: string) => void;
 }
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const ModalDialog = ({
   modalType,
@@ -36,8 +37,8 @@ const ModalDialog = ({
       setPrice("");
       setDate(null);
     } else if (modalType === "edit" && expense) {
-      setTitle(expense.expense);
-      setPrice(expense.price);
+      setTitle(expense.title);
+      setPrice(expense.price.toString());
       setDate(dayjs(expense.date));
     }
   }, [modalType, expense]);
@@ -46,34 +47,50 @@ const ModalDialog = ({
     setIsFormValid(title.trim() !== "" && price.trim() !== "" && date !== null);
   }, [title, price, date]);
 
-  const users = useSelector((state: RootState) => state.user.users);
-  const loggedInUser = users.find((user) => user.isLoggedIn);
-
-  const handleExpense = () => {
+  const handleExpense = async () => {
     if (modalType === "add") {
       const newExpense: Expense = {
-        key: Date.now(),
-        userId: loggedInUser?.userId || 0,
-        expense: title,
-        price,
+        title,
+        userID: expense?.userID || "",
+        price: parseFloat(price),
         date: date?.format("YYYY-MM-DD") || "",
       };
-      onAddExpense(newExpense);
+      try {
+        const response = await axios.post(`${baseUrl}/expenses`, newExpense);
+        onAddExpense(response.data);
+      } catch (error) {
+        console.error("Error adding expense:", error);
+      }
     } else if (modalType === "edit" && expense) {
       const updatedExpense: Expense = {
         ...expense,
-        expense: title,
-        price,
+        title,
+        price: parseFloat(price),
         date: date?.format("YYYY-MM-DD") || "",
       };
-      onEditExpense(updatedExpense);
+      try {
+        const response = await axios.put(
+          `${baseUrl}/expenses/${expense._id}`,
+          updatedExpense
+        );
+        onEditExpense(response.data);
+      } catch (error) {
+        console.error("Error updating expense:", error);
+      }
     }
+    onClose();
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (expense) {
-      onDeleteExpense(expense.key);
+      try {
+        await axios.delete(`${baseUrl}/expenses/${expense._id}`);
+        onDeleteExpense(expense._id || "");
+      } catch (error) {
+        console.error("Error deleting expense:", error);
+      }
     }
+    onClose();
   };
 
   const renderContent = () => {
@@ -179,7 +196,7 @@ const ModalDialog = ({
               style={{ display: "flex", flexDirection: "column", gap: "2px" }}
             >
               <p style={{ color: "#2B2B2B", fontWeight: 500 }}>Title</p>
-              <p>{expense?.expense}</p>
+              <p>{expense?.title}</p>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div

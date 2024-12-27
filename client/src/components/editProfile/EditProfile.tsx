@@ -1,27 +1,28 @@
 import { Card, Divider, Input, Button, DatePicker, Select } from "antd";
-import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
+import axios from "axios";
 import { useFormik } from "formik";
-import { RootState } from "../../redux/store";
-import { updateUser } from "../../redux/slices/usersSlice";
 import { profileValidationSchema } from "../../utils/validation";
 import styles from "./EditProfile.module.css";
 import { useState } from "react";
+import { User } from "../../utils/interfaces";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
 const EditProfile = ({
   onSwitchTab,
   showAlert,
+  userData,
 }: {
   onSwitchTab: () => void;
   showAlert: () => void;
+  userData: User | null;
 }) => {
-  const users = useSelector((state: RootState) => state.user.users);
-  const loggedInUser = users.find((user) => user.isLoggedIn);
   const [profilePicture, setProfilePicture] = useState(
-    loggedInUser?.profilePicture || ""
+    userData?.profilePicture || ""
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,45 +40,48 @@ const EditProfile = ({
     setProfilePicture("");
   };
 
-  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
-      firstName: loggedInUser?.firstName || "",
-      middleName: loggedInUser?.middleName || "",
-      lastName: loggedInUser?.lastName || "",
-      streetAddress: loggedInUser?.streetAddress || "",
-      city: loggedInUser?.city || "",
-      state: loggedInUser?.state || "",
-      zipCode: loggedInUser?.zipCode || "",
-      phoneNumber: loggedInUser?.phoneNumber || "",
-      email: loggedInUser?.email || "",
-      website: loggedInUser?.website || "",
-      dateOfBirth: loggedInUser?.dateOfBirth || "",
-      education: loggedInUser?.education || "",
-      gender: loggedInUser?.gender || "",
-      aboutMe: loggedInUser?.aboutMe || "",
-      budgetLimit: loggedInUser?.budgetLimit || 0,
+      firstName: userData?.firstName || "",
+      middleName: userData?.middleName || "",
+      lastName: userData?.lastName || "",
+      streetAddress: userData?.streetAddress || "",
+      city: userData?.city || "",
+      state: userData?.state || "",
+      zipCode: userData?.zipCode || "",
+      phoneNumber: userData?.phoneNumber || "",
+      email: userData?.email || "",
+      website: userData?.website || "",
+      dateOfBirth: userData?.dateOfBirth || "",
+      education: userData?.education || "",
+      gender: userData?.gender || "",
+      aboutMe: userData?.aboutMe || "",
+      budgetLimit: userData?.budgetLimit || 0,
     },
     validationSchema: profileValidationSchema,
-    onSubmit: (values) => {
-      const formattedValues = {
+    onSubmit: async (values) => {
+      const formattedValues: { [key: string]: any } = {
         ...values,
         profilePicture,
         dateOfBirth: values.dateOfBirth
           ? dayjs(values.dateOfBirth).format("YYYY-MM-DD")
           : "",
       };
+
+      Object.keys(formattedValues).forEach(
+        (key) => formattedValues[key] === "" && delete formattedValues[key]
+      );
+
       console.log("Form values:", formattedValues);
-      if (loggedInUser) {
-        dispatch(
-          updateUser({
-            ...loggedInUser,
-            ...formattedValues,
-          })
-        );
-        showAlert();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        onSwitchTab();
+      if (userData) {
+        try {
+          await axios.put(`${baseUrl}/users/${userData._id}`, formattedValues);
+          showAlert();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          onSwitchTab();
+        } catch (error) {
+          console.error("Failed to update user data:", error);
+        }
       }
     },
   });

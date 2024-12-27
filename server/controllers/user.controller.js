@@ -44,8 +44,7 @@ export const createUser = async (req, res) => {
     !user.password ||
     !user.firstName ||
     !user.lastName ||
-    !user.budgetLimit ||
-    !user.isLoggedIn
+    !user.budgetLimit
   ) {
     return res.status(400).json({
       success: false,
@@ -53,9 +52,16 @@ export const createUser = async (req, res) => {
     });
   }
 
-  const newUser = new User(user);
-
   try {
+    const existingUser = await User.findOne({ email: user.email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
+
+    const newUser = new User(user);
     await newUser.save();
 
     res.status(201).json({
