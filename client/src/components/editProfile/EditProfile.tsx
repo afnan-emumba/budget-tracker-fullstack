@@ -60,7 +60,7 @@ const EditProfile = ({
     },
     validationSchema: profileValidationSchema,
     onSubmit: async (values) => {
-      const formattedValues: { [key: string]: any } = {
+      const formattedValues: { [key: string]: string | number | undefined } = {
         ...values,
         profilePicture,
         dateOfBirth: values.dateOfBirth
