@@ -23,7 +23,13 @@ const Login = () => {
 
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
-      const response = await axios.post(`${baseUrl}/auth/login`, values);
+      // const response = await axios.post(`${baseUrl}/auth/login`, values);
+      const response = await axios.post(`${baseUrl}/auth/login`, values, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         const userId = response.data._id;
