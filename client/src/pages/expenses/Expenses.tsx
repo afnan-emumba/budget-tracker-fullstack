@@ -47,7 +47,9 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     if (userID) {
-      const expensesResponse = await axios.get(`${baseUrl}/expenses/u/${userID}`);
+      const expensesResponse = await axios.get(
+        `${baseUrl}/expenses/u/${userID}`
+      );
       setExpenses(expensesResponse.data);
     }
   };

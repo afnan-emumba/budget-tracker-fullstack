@@ -73,7 +73,7 @@ const Analysis = () => {
 
       <div className={styles.analysisContent}>
         {loading ? (
-          <Spin size="large" />
+          <Spin size='large' />
         ) : (
           <>
             <div className={styles.header}>
@@ -106,7 +106,10 @@ const Analysis = () => {
                   </div>
                 )}
                 dataSource={[
-                  { key: "1", plot: <LinePLot data={getData()} range={range} /> },
+                  {
+                    key: "1",
+                    plot: <LinePLot data={getData()} range={range} />,
+                  },
                 ]}
                 columns={[{ dataIndex: "plot", key: "plot" }]}
               />
