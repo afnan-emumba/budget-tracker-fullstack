@@ -15,6 +15,9 @@ app.use(express.json());
 
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Hello, world" });
+});
 app.use("/expenses", expenseRoutes);
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
