@@ -11,9 +11,10 @@ const app = express();
 // app.use(cors());
 
 const corsOptions = {
-  origin: ["https://budget-tracker-frontend-rho.vercel.app"], // Allow your frontend origin
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // If using cookies/auth headers
+  origin: ["https://budget-tracker-frontend-rho.vercel.app"], // Frontend origin
+  methods: "GET,POST,PUT,DELETE,OPTIONS", // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed request headers
+  credentials: true, // Allow cookies if needed
 };
 
 app.use(cors(corsOptions));
