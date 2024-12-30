@@ -2,10 +2,17 @@
   "version": 2,
   "builds": [
     {
-      "src": "vite.config.ts",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "src": "client/package.json",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/" }]
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "client/$1"
+    }
+  ]
 }
