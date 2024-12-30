@@ -10,6 +10,7 @@ import {
   Select,
   Input,
   DatePicker,
+  Spin,
 } from "antd";
 import {
   SearchIcon1,
@@ -42,26 +43,34 @@ const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const { userID } = useUser();
   const [user, setUser] = useState<User>();
+  const [loading, setLoading] = useState(true);
+
+  const fetchExpenses = async () => {
+    if (userID) {
+      const expensesResponse = await axios.get(`${baseUrl}/expenses/u/${userID}`);
+      setExpenses(expensesResponse.data);
+    }
+  };
 
   useEffect(() => {
     const fetchUserDataAndExpenses = async () => {
       try {
         if (userID) {
+          setLoading(true);
           const userResponse = await axios.get(`${baseUrl}/users/${userID}`);
           setUser(userResponse.data);
 
-          const expensesResponse = await axios.get(
-            `${baseUrl}/expenses/u/${userID}`
-          );
-          setExpenses(expensesResponse.data);
+          await fetchExpenses();
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
     fetchUserDataAndExpenses();
-  }, [userID, user]);
+  }, [userID]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -101,10 +110,15 @@ const Expenses = () => {
 
   const filteredExpenses = expenses
     .filter(
-      (expense) => !filterDate || dayjs(expense.date).isSame(filterDate, "day")
+      (expense) =>
+        expense &&
+        (!filterDate || dayjs(expense.date).isSame(filterDate, "day"))
     )
-    .filter((expense) =>
-      expense.title.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      (expense) =>
+        expense &&
+        expense.title &&
+        expense.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .reverse();
 
@@ -209,50 +223,6 @@ const Expenses = () => {
     );
   };
 
-  const handleExpense = (expense: Expense, type: "add" | "edit") => {
-    if (type === "add" && userID) {
-      const newExpense = { ...expense, userId: userID };
-      fetch(`${baseUrl}/expenses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newExpense),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setExpenses((prevExpenses) => [...prevExpenses, data]);
-          showToast("add", "Expense Added Successfully!");
-        })
-        .catch((error) => {
-          console.error("Error adding expense:", error);
-        });
-    } else if (type === "edit") {
-      fetch(`${baseUrl}/expenses/${expense._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(expense),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setExpenses((prevExpenses) =>
-            prevExpenses.map((exp) => (exp._id === data.key ? data : exp))
-          );
-          showToast("edit", "Expense Updated Successfully!");
-        })
-        .catch((error) => {
-          console.error("Error updating expense:", error);
-        });
-    }
-    setModalType(null);
-  };
-
-  const handleAddExpense = (expense: Expense) => handleExpense(expense, "add");
-  const handleEditExpense = (expense: Expense) =>
-    handleExpense(expense, "edit");
-
   const handleDeleteExpense = (id: string) => {
     fetch(`${baseUrl}/expenses/${id}`, {
       method: "DELETE",
@@ -277,6 +247,10 @@ const Expenses = () => {
     setModalType(null);
   };
 
+  const handleExpenseAdded = () => {
+    fetchExpenses();
+  };
+
   const tableColumnsConfig = user ? tableColumns(onDelete, onEdit, user) : [];
 
   useEffect(() => {
@@ -295,76 +269,88 @@ const Expenses = () => {
       </Helmet>
 
       <div className={styles.homeContent}>
-        <div className={styles.header}>
-          <h2>Expenses</h2>
-          <Button type='primary' onClick={onAdd}>
-            Add Expenses
-          </Button>
-        </div>
-        <Divider />
-        <div className={styles.expenseTable}>
-          <Table
-            columns={tableColumnsConfig}
-            dataSource={paginatedData}
-            pagination={false}
-            title={() => (
-              <div className={styles.tableControls}>
-                <h3>Expenses</h3>
-                <div className={styles.tableFilters}>
-                  <div className={styles.tableSelect}>
-                    <label>Sort by</label>
-                    <Select
-                      defaultValue='All'
-                      style={{ width: 210 }}
-                      onChange={handleSortChange}
-                    >
-                      <Option value='price-h2l'>
-                        Price: Highest to lowest
-                      </Option>
-                      <Option value='price-l2h'>
-                        Price: Lowest to highest
-                      </Option>
-                      <Option value='date-n2o'>Date: Newest to oldest</Option>
-                      <Option value='date-o2n'>Date: Oldest to newest</Option>
-                    </Select>
+        {loading ? (
+          <Spin size='large' />
+        ) : (
+          <>
+            <div className={styles.header}>
+              <h2>Expenses</h2>
+              <Button type='primary' onClick={onAdd}>
+                Add Expenses
+              </Button>
+            </div>
+            <Divider />
+            <div className={styles.expenseTable}>
+              <Table
+                columns={tableColumnsConfig}
+                dataSource={paginatedData.map((item) => ({
+                  ...item,
+                  key: item._id,
+                }))}
+                pagination={false}
+                title={() => (
+                  <div className={styles.tableControls}>
+                    <h3>Expenses</h3>
+                    <div className={styles.tableFilters}>
+                      <div className={styles.tableSelect}>
+                        <label>Sort by</label>
+                        <Select
+                          defaultValue='All'
+                          style={{ width: 210 }}
+                          onChange={handleSortChange}
+                        >
+                          <Option value='price-h2l'>
+                            Price: Highest to lowest
+                          </Option>
+                          <Option value='price-l2h'>
+                            Price: Lowest to highest
+                          </Option>
+                          <Option value='date-n2o'>
+                            Date: Newest to oldest
+                          </Option>
+                          <Option value='date-o2n'>
+                            Date: Oldest to newest
+                          </Option>
+                        </Select>
+                      </div>
+                      <div className={styles.tableSelect}>
+                        <label>By Date</label>
+                        <DatePicker
+                          style={{ width: 210 }}
+                          suffixIcon={<CalendarIcon />}
+                          onChange={handleDateChange}
+                        />
+                      </div>
+                      <Input
+                        prefix={<SearchIcon1 />}
+                        placeholder='Search'
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        style={{
+                          width: 350,
+                          borderColor: "#E1E8F2",
+                          borderRadius: "4px",
+                        }}
+                        className={styles.tableInput}
+                      />
+                    </div>
                   </div>
-                  <div className={styles.tableSelect}>
-                    <label>By Date</label>
-                    <DatePicker
-                      style={{ width: 210 }}
-                      suffixIcon={<CalendarIcon />}
-                      onChange={handleDateChange}
-                    />
-                  </div>
-                  <Input
-                    prefix={<SearchIcon1 />}
-                    placeholder='Search'
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    style={{
-                      width: 350,
-                      borderColor: "#E1E8F2",
-                      borderRadius: "4px",
-                    }}
-                    className={styles.tableInput}
-                  />
-                </div>
+                )}
+              />
+              <div className={styles.tableFooter}>
+                <p>
+                  Showing {paginatedData.length} / {expenses.length} items
+                </p>
+                <Pagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={expenses.length}
+                  onChange={handlePageChange}
+                />
               </div>
-            )}
-          />
-          <div className={styles.tableFooter}>
-            <p>
-              Showing {paginatedData.length} / {expenses.length} items
-            </p>
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={expenses.length}
-              onChange={handlePageChange}
-            />
-          </div>
-        </div>
-
+            </div>
+          </>
+        )}
         <Toaster
           containerStyle={{
             top: 90,
@@ -378,9 +364,10 @@ const Expenses = () => {
             visible={!!modalType}
             onClose={() => setModalType(null)}
             expense={selectedExpense}
-            onAddExpense={handleAddExpense}
-            onEditExpense={handleEditExpense}
+            setExpenses={setExpenses}
+            showToast={showToast}
             onDeleteExpense={handleDeleteExpense}
+            onExpenseAdded={handleExpenseAdded}
           />
         </div>
       </div>

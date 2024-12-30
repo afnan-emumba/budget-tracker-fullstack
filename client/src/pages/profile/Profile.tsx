@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 import { Link } from "react-router";
-import { Divider, Alert } from "antd";
+import { Divider, Alert, Spin } from "antd";
 import { BackArrowIcon } from "../../assets/icons";
 import ProfileSideCard from "../../components/profileSideCard/ProfileSideCard";
 import ProfileDetails from "../../components/profileDetails/ProfileDetails";
@@ -20,19 +20,24 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [alertVisible, setAlertVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (userId) {
+      setLoading(true);
       axios
         .get(`${baseUrl}/users/${userId}`)
         .then((response) => {
           setUserData(response.data);
+          setLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
+          setLoading(false);
         });
     } else {
       console.error("User ID not found");
+      setLoading(false);
     }
   }, [userId]);
 
@@ -55,56 +60,64 @@ const Profile = () => {
       </Helmet>
 
       <div className={styles.profileContent}>
-        <div className={styles.header}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <Link to={"/"}>
-              <BackArrowIcon />
-            </Link>
-            <h2>Profile</h2>
-          </div>
+        {loading ? (
+          <Spin size='large' />
+        ) : (
+          <>
+            <div className={styles.header}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                }}
+              >
+                <Link to={"/"}>
+                  <BackArrowIcon />
+                </Link>
+                <h2>Profile</h2>
+              </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "2rem",
-            }}
-          >
-            <p
-              className={`${styles.profileLink} ${
-                activeTab === "profile" ? styles.active : ""
-              }`}
-              onClick={() => setActiveTab("profile")}
-            >
-              Profile
-            </p>
-            <p
-              className={`${styles.profileLink} ${
-                activeTab === "account" ? styles.active : ""
-              }`}
-              onClick={() => setActiveTab("account")}
-            >
-              My account
-            </p>
-          </div>
-        </div>
-        <Divider />
-        <div className={styles.profileCardsContainer}>
-          <ProfileSideCard userData={userData} />
-          {activeTab === "profile" && <ProfileDetails userData={userData} />}
-          {activeTab === "account" && (
-            <EditProfile
-              onSwitchTab={handleSwitchTab}
-              showAlert={() => setAlertVisible(true)}
-              userData={userData}
-            />
-          )}
-        </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "2rem",
+                }}
+              >
+                <p
+                  className={`${styles.profileLink} ${
+                    activeTab === "profile" ? styles.active : ""
+                  }`}
+                  onClick={() => setActiveTab("profile")}
+                >
+                  Profile
+                </p>
+                <p
+                  className={`${styles.profileLink} ${
+                    activeTab === "account" ? styles.active : ""
+                  }`}
+                  onClick={() => setActiveTab("account")}
+                >
+                  My account
+                </p>
+              </div>
+            </div>
+            <Divider />
+            <div className={styles.profileCardsContainer}>
+              <ProfileSideCard userData={userData} />
+              {activeTab === "profile" && (
+                <ProfileDetails userData={userData} />
+              )}
+              {activeTab === "account" && (
+                <EditProfile
+                  onSwitchTab={handleSwitchTab}
+                  showAlert={() => setAlertVisible(true)}
+                  userData={userData}
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {alertVisible && (

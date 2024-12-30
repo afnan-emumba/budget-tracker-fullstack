@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
-import { MenuIcon } from "../../assets/icons";
+import { MenuIcon, NotificationIcon } from "../../assets/icons";
 import Logo from "../logo/Logo";
 import Placeholder from "../../assets/images/placeholder_avatar.jpg";
 import { useUser } from "../../context/UserContext";
@@ -47,6 +47,9 @@ const Navbar = ({
 
       {showLogo && <Logo />}
       <div className={styles.navbarContent}>
+        <div className={styles.notificationIcon}>
+          <NotificationIcon />
+        </div>
         <div className={styles.userAvatar}>
           <Link to={"/profile"}>
             <img

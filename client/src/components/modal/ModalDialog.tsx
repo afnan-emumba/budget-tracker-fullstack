@@ -4,15 +4,17 @@ import { Expense } from "../../utils/interfaces";
 import styles from "./ModalDialog.module.css";
 import dayjs from "dayjs";
 import axios from "axios";
+import { useUser } from "../../context/UserContext";
 
 interface ModalDialogProps {
   modalType: "add" | "edit" | "delete" | null;
   visible: boolean;
   onClose: () => void;
   expense: Expense | null;
-  onAddExpense: (expense: Expense) => void;
-  onEditExpense: (expense: Expense) => void;
+  setExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
+  showToast: (type: "add" | "edit" | "delete", message: string) => void;
   onDeleteExpense: (id: string) => void;
+  onExpenseAdded: () => void;
 }
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -22,10 +24,12 @@ const ModalDialog = ({
   visible,
   onClose,
   expense,
-  onAddExpense,
-  onEditExpense,
+  setExpenses,
+  showToast,
   onDeleteExpense,
+  onExpenseAdded,
 }: ModalDialogProps) => {
+  const { userID } = useUser();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
@@ -48,16 +52,18 @@ const ModalDialog = ({
   }, [title, price, date]);
 
   const handleExpense = async () => {
-    if (modalType === "add") {
+    if (modalType === "add" && userID) {
       const newExpense: Expense = {
         title,
-        userID: expense?.userID || "",
+        userID: userID,
         price: parseFloat(price),
         date: date?.format("YYYY-MM-DD") || "",
       };
       try {
         const response = await axios.post(`${baseUrl}/expenses`, newExpense);
-        onAddExpense(response.data);
+        setExpenses((prevExpenses) => [...prevExpenses, response.data]);
+        showToast("add", "Expense Added Successfully!");
+        onExpenseAdded();
       } catch (error) {
         console.error("Error adding expense:", error);
       }
@@ -73,7 +79,12 @@ const ModalDialog = ({
           `${baseUrl}/expenses/${expense._id}`,
           updatedExpense
         );
-        onEditExpense(response.data);
+        setExpenses((prevExpenses) =>
+          prevExpenses.map((exp) =>
+            exp._id === response.data._id ? response.data : exp
+          )
+        );
+        showToast("edit", "Expense Updated Successfully!");
       } catch (error) {
         console.error("Error updating expense:", error);
       }
