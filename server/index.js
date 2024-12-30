@@ -6,12 +6,11 @@ import expenseRoutes from "./routes/expense.route.js";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 
+dotenv.config();
+
 const app = express();
 
 app.use(cors());
-
-dotenv.config();
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
