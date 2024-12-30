@@ -8,21 +8,14 @@ import authRoutes from "./routes/auth.route.js";
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://budget-tracker-frontend-rho.vercel.app"
-  ); // Replace with your frontend URL
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  ); // Allow specific HTTP methods
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // If using cookies or authentication
-  next();
-});
+const corsOptions = {
+  origin: "https://budget-tracker-frontend-rho.vercel.app", // Replace with your frontend's URL
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // Enable cookies/authentication headers
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 dotenv.config();
 
