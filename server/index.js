@@ -8,7 +8,15 @@ import authRoutes from "./routes/auth.route.js";
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+
+const corsOptions = {
+  origin: ["https://budget-tracker-frontend-rho.vercel.app"], // Allow your frontend origin
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // If using cookies/auth headers
+};
+
+app.use(cors(corsOptions));
 
 dotenv.config();
 
@@ -24,6 +32,8 @@ app.use("/auth", authRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  connectDB();
+  connectDB()
+    .then(() => console.log("Database connected"))
+    .catch((err) => console.error("Database connection error:", err));
   console.log("Server started at:", PORT);
 });
