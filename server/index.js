@@ -13,7 +13,7 @@ const app = express();
 // app.use(cors());
 
 const corsConfig = {
-  origin: "https://budget-tracker-backend-five.vercel.app/", // Your frontend URL
+  origin: "https://budget-tracker-frontend-rho.vercel.app/", // Your frontend URL
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
