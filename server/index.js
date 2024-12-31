@@ -23,8 +23,8 @@ app.use("/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  connectDB()
+app.listen(PORT, async () => {
+  await connectDB()
     .then(() => console.log("Database connected"))
     .catch((err) => console.error("Database connection error:", err));
   console.log("Server started at:", PORT);
