@@ -23,7 +23,9 @@ const Analysis = () => {
       try {
         if (userID) {
           setLoading(true);
-          const response = await axios.get(`${baseUrl}/expenses/u/${userID}`);
+          const response = await axios.get(
+            `${baseUrl}/expenses/user/${userID}`
+          );
           setExpenses(response.data);
           setLoading(false);
         }

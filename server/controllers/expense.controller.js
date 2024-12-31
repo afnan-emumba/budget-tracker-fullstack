@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 import Expense from "../models/expense.model.js";
+import { successResponse, errorResponse } from "../utils/responseHandler.js";
 
 export const getExpenses = async (req, res) => {
   try {
     const expenses = await Expense.find({});
-    res.status(200).json(expenses);
+    return successResponse(res, 200, expenses);
   } catch (error) {
-    console.log("Error:", error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };
 
@@ -19,20 +15,14 @@ export const getExpense = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({
-      success: false,
-      message: "Expense not found",
-    });
+    return errorResponse(res, 404, "Expense not found");
   }
 
   try {
     const expense = await Expense.findById(id);
-    res.status(200).json(expense);
+    return successResponse(res, 200, expense);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };
 
@@ -40,20 +30,14 @@ export const getUserExpenses = async (req, res) => {
   const { userID } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(userID)) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
+    return errorResponse(res, 404, "User not found");
   }
 
   try {
     const expenses = await Expense.find({ userID });
-    res.status(200).json(expenses);
+    return successResponse(res, 200, expenses);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };
 
@@ -61,54 +45,32 @@ export const createExpense = async (req, res) => {
   const expense = req.body;
 
   if (!expense.title || !expense.price || !expense.date || !expense.userID) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing fields",
-    });
+    return errorResponse(res, 400, "Missing fields");
   }
 
   const newExpense = new Expense(expense);
 
   try {
     await newExpense.save();
-
-    res.status(201).json({
-      success: true,
-      data: newExpense,
-    });
+    return successResponse(res, 201, newExpense);
   } catch (error) {
-    console.log("Error in expense creation:", error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };
 
 export const updateExpense = async (req, res) => {
   const { id } = req.params;
-
   const expense = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({
-      success: true,
-      message: "Expense not found",
-    });
+    return errorResponse(res, 404, "Expense not found");
   }
 
   try {
     await Expense.findByIdAndUpdate(id, expense, { new: true });
-    res.status(200).json({
-      success: true,
-      message: "Expense Updated",
-    });
+    return successResponse(res, 200, null);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };
 
@@ -116,22 +78,13 @@ export const deleteExpense = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({
-      success: true,
-      message: "Expense not found",
-    });
+    return errorResponse(res, 404, "Expense not found");
   }
 
   try {
     await Expense.findByIdAndDelete(id);
-    res.status(200).json({
-      success: true,
-      message: "Expense Deleted",
-    });
+    return successResponse(res, 200, null);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return errorResponse(res, 500, "Server error");
   }
 };

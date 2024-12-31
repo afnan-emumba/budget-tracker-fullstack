@@ -27,7 +27,6 @@ const Login = () => {
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
         const userId = response.data._id;
-        console.log(userId);
         setUserID(userId);
         navigate("/");
       } else {

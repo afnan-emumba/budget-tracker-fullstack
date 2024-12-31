@@ -16,7 +16,6 @@ const Profile = () => {
   const { userID } = useUser();
 
   const userId = userID;
-  console.log("USER", userId);
   const [activeTab, setActiveTab] = useState("profile");
   const [alertVisible, setAlertVisible] = useState(false);
   const [userData, setUserData] = useState(null);

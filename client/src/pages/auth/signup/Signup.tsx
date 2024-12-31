@@ -37,7 +37,6 @@ const Signup = () => {
     validationSchema,
     onSubmit: async (values) => {
       const { confirmPassword, ...submitValues } = values;
-      console.log(confirmPassword);
 
       Object.keys(submitValues).forEach((key) => {
         (submitValues as any)[key] = (submitValues as any)[key].toString();

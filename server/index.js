@@ -2,9 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
-import expenseRoutes from "./routes/expense.route.js";
-import userRoutes from "./routes/user.route.js";
-import authRoutes from "./routes/auth.route.js";
+import routes from "./routes/index.route.js";
 
 dotenv.config();
 connectDB()
@@ -14,15 +12,9 @@ connectDB()
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+app.use(cors());
 
-app.use("/expenses", expenseRoutes);
-app.use("/users", userRoutes);
-app.use("/auth", authRoutes);
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello, world" });
-});
+app.use("/", routes);
 
 const PORT = process.env.PORT || 5000;
 
