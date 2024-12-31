@@ -13,9 +13,10 @@ import {
 
 const router = express.Router();
 
-router.get("/", getUsers);
-router.get("/:id", getUser);
-router.post("/", validate(createUserSchema), createUser);
-router.put("/:id", validate(updateUserSchema), updateUser);
+router
+  .get("/", getUsers)
+  .get("/:id", getUser)
+  .post("/", validate(createUserSchema), createUser)
+  .put("/:id", validate(updateUserSchema), updateUser);
 
 export default router;
