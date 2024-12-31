@@ -10,15 +10,7 @@ dotenv.config();
 
 const app = express();
 
-// app.use(cors());
-
-const corsConfig = {
-  origin: "https://budget-tracker-frontend-rho.vercel.app/", // Your frontend URL
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-};
-app.use(cors(corsConfig));
-app.options("*", cors(corsConfig));
+app.use(cors());
 app.use(json());
 
 app.get("/", (req, res) => {
