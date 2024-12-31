@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: "https://chat-pheonix.netlify.app", // Your frontend URL
+  origin: "https://budget-tracker-frontend-rho.vercel.app", // Your frontend URL
   credentials: true, // Allow credentials (cookies, authorization headers)
   methods: ["GET", "POST", "OPTIONS"], // Allowed methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
