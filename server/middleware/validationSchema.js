@@ -40,14 +40,16 @@ export const createUserSchema = yup.object().shape({
     .max(99999999, "Budget limit must be at most 99999999"),
 });
 
-export const expenseSchema = yup.object().shape({
-  title: yup
-    .string()
-    .required("Title is required")
-    .max(30, "Title is too long"),
-  userID: yup.string().required("User ID is required"),
+export const createExpenseSchema = yup.object().shape({
+  title: yup.string().required("Title is required"),
   price: yup.number().required("Price is required"),
   date: yup.string().required("Date is required"),
+});
+
+export const updateExpenseSchema = yup.object().shape({
+  title: yup.string(),
+  price: yup.number(),
+  date: yup.string(),
 });
 
 export const loginSchema = yup.object().shape({

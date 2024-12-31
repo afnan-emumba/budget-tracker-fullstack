@@ -93,10 +93,10 @@ const ModalDialog = ({
   };
 
   const handleDelete = async () => {
-    if (expense) {
+    if (expense && expense._id) {
       try {
         await axios.delete(`${baseUrl}/expenses/${expense._id}`);
-        onDeleteExpense(expense._id || "");
+        onDeleteExpense(expense._id);
       } catch (error) {
         console.error("Error deleting expense:", error);
       }

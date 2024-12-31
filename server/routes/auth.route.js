@@ -5,8 +5,7 @@ import { loginSchema } from "../middleware/validationSchema.js";
 
 const router = express.Router();
 
-router
-  .post("/login", validate(loginSchema), loginUser)
-  .get("/logout", logoutUser);
+router.post("/login", validate(loginSchema), loginUser);
+router.get("/logout", logoutUser);
 
 export default router;

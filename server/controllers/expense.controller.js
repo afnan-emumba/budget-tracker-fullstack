@@ -67,8 +67,8 @@ export const updateExpense = async (req, res) => {
   }
 
   try {
-    await Expense.findByIdAndUpdate(id, expense, { new: true });
-    return successResponse(res, 200, null);
+    const newExp = await Expense.findByIdAndUpdate(id, expense, { new: true });
+    return successResponse(res, 200, newExp);
   } catch (error) {
     return errorResponse(res, 500, "Server error");
   }
