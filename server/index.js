@@ -10,17 +10,7 @@ dotenv.config();
 
 const app = express();
 
-const corsOptions = {
-  origin: "https://budget-tracker-frontend-rho.vercel.app", // Your frontend URL
-  credentials: true, // Allow credentials (cookies, authorization headers)
-  methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"], // Allowed methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-};
-
-app.use(cors(corsOptions));
-
-// Preflight request handling (optional, usually handled by the cors middleware)
-app.options("*", cors(corsOptions));
+app.use(cors());
 
 app.use(json());
 

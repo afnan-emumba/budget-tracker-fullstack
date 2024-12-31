@@ -12,7 +12,7 @@ import "./App.css";
 function App() {
   return (
     <UserProvider>
-      <ConfigProvider theme={antTheme}>
+      <ConfigProvider wave={{ disabled: true }} theme={antTheme}>
         <div className='app-container'>
           <BrowserRouter>
             <Routes>
