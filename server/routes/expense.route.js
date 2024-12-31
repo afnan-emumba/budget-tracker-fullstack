@@ -19,7 +19,7 @@ router.get("/", getExpenses);
 router.get("/:id", getExpense);
 router.get("/user/:userID", getUserExpenses);
 router.post("/", validate(createExpenseSchema), createExpense);
-router.put("/:id", updateExpense);
+router.put("/:id", validate(updateExpenseSchema), updateExpense);
 router.delete("/:id", deleteExpense);
 
 export default router;
