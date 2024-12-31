@@ -10,13 +10,18 @@ dotenv.config();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ["https://budget-tracker-frontend-rho.vercel.app"],
-    methods: ["POST", "GET", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: "https://chat-pheonix.netlify.app", // Your frontend URL
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ["GET", "POST", "OPTIONS"], // Allowed methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+};
+
+app.use(cors(corsOptions));
+
+// Preflight request handling (optional, usually handled by the cors middleware)
+app.options("*", cors(corsOptions));
+
 app.use(json());
 
 app.get("/", (req, res) => {
